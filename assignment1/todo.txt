@@ -1,0 +1,4 @@
+- Add unigrams/bigrams
+- Add SVMs
+- Compare using sign test
+- Write report

@@ -1,6 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\stemmer.c">
+      <Filter>Porter Stemmer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\helpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\stemmer.h">
+      <Filter>Porter Stemmer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\helpers.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Porter Stemmer">
+      <UniqueIdentifier>{bac7d20c-f0f9-44fb-85ea-83ee092a5659}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{ea7d7c4c-a76b-4372-9aac-5dfb860e64d1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\todo.txt" />
   </ItemGroup>
 </Project>
