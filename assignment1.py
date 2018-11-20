@@ -1,6 +1,8 @@
 import os
+from collections import Counter
 from scipy.sparse import lil_matrix
 from sklearn.naive_bayes import MultinomialNB
+from stemmer import PorterStemmer
 
 # Independent variable columns:
 # *****************************
@@ -28,23 +30,20 @@ from sklearn.naive_bayes import MultinomialNB
 # print(classifier.predict(lil_matrix((1, 60000))))
 
 # TODO: add support for unigrams/bigrams
-def get_doc_vector(file, word_freqs):
-    doc = {}
-
+def get_doc_vector(file, word_freqs, stemming):
+    stemmer = PorterStemmer()
+    doc = Counter()
     for token in file.readlines():
-        if not token in word_freqs:
-            word_freqs[token] = 1
-        else:
-            word_freqs[token] += 1
-
-        if not token in doc:
-            doc[token] = 1
-        else:
-            doc[token] += 1
-
+        token = token.strip().lower()
+        if not token:
+            continue
+        if stemming:
+            token = stemmer.stem(token, 0, len(token) - 1)
+        word_freqs[token] += 1
+        doc[token] += 1
     return doc
 
-def load_data(num_folds):
+def load_documents(num_folds, stemming):
     pos_path = "data/POS/"
     neg_path = "data/NEG/"
 
@@ -54,19 +53,21 @@ def load_data(num_folds):
     neg_files.sort()
 
     folds = [[] for i in range(num_folds)]
-    word_freqs = {}
+    word_freqs = Counter()
 
-    for i in range(1000):
-        with open(pos_path + pos_files[i], encoding="utf8") as f:
-            folds[i % num_folds].append(get_doc_vector(f, word_freqs))
-        with open(neg_path + neg_files[i], encoding="utf8") as f:
-            folds[i % num_folds].append(get_doc_vector(f, word_freqs))
+    def load_files(files, base_path):
+        for i in range(len(files)):
+            with open(base_path + files[i], encoding="utf8") as f:
+                folds[i % num_folds].append(get_doc_vector(f, word_freqs, stemming))
+
+    load_files(pos_files, pos_path)
+    load_files(neg_files, neg_path)
 
     return folds, word_freqs
 
-options = {
-    "folds": 3,
-    "min_freq_cutoff": 4,
-    "unigrams": True,
-    "bigrams": False
-}
+NUM_FOLDS = 3
+MIN_FREQ_CUTOFF = 4
+STEMMING = False
+
+folds, word_freqs = load_documents(NUM_FOLDS, STEMMING)
+# TODO
