@@ -1,13 +1,13 @@
 import os
-from collections import Counter
-from scipy.sparse import lil_matrix
+
 from sklearn.naive_bayes import MultinomialNB
-from stemmer import PorterStemmer
+from sklearn.feature_extraction.text import CountVectorizer
 
 # Independent variable columns:
 # *****************************
 # Features: unigrams, bigrams, unigrams + bigrams
-# Stemming: yes, no
+# Stemming?
+# Frequency vs Presence?
 
 # Dependent variable columns:
 # ***************************
@@ -15,24 +15,24 @@ from stemmer import PorterStemmer
 # Smoothed Naive Bayes
 # SVM
 
-# 1. Load all documents as maps from string to int (word occurrences)
-# 2. Produce a list of every word that occurs in the dataset
-# 3. Create a sparse 2000 x (no_of_features) matrix to store all the documents
-# 4. Train
-# 5. Classify
+def run_naive_bayes(num_folds, smoothed, ngrams, stemming, binary):
+    pos_path = "data/POS/"
+    neg_path = "data/NEG/"
+    files = [pos_path + p for p in sorted(os.listdir(pos_path))] + \
+            [neg_path + p for p in sorted(os.listdir(neg_path))]
+    print(files)
 
-# X = lil_matrix((1000, 60000))
-# y = np.random.randint(5, size=1000)
+    def tokenize(document):
+        return document
+    vectorizer = CountVectorizer(input="filename", ngram_range=ngrams)
 
-# classifier = MultinomialNB()
-# classifier.fit(X, y)
+run_naive_bayes(3, True, (1, 1), False, False)
 
-# print(classifier.predict(lil_matrix((1, 60000))))
-
+"""
 # TODO: add support for unigrams/bigrams
 def get_doc_vector(file, word_freqs, stemming):
     stemmer = PorterStemmer()
-    doc = Counter()
+    document = Counter()
     for token in file.readlines():
         token = token.strip().lower()
         if not token:
@@ -40,8 +40,8 @@ def get_doc_vector(file, word_freqs, stemming):
         if stemming:
             token = stemmer.stem(token, 0, len(token) - 1)
         word_freqs[token] += 1
-        doc[token] += 1
-    return doc
+        document[token] += 1
+    return document
 
 def load_documents(num_folds, stemming):
     pos_path = "data/POS/"
@@ -70,4 +70,26 @@ MIN_FREQ_CUTOFF = 4
 STEMMING = False
 
 folds, word_freqs = load_documents(NUM_FOLDS, STEMMING)
-# TODO
+classifier = MultinomialNB()
+
+word_indices = {}
+ctr = 0
+for word in word_freqs:
+    word_indices[word] = ctr
+    ctr += 1
+
+for i in range(len(folds)):
+    for j in range(len(folds)):
+        if i == j:
+            continue
+        training_vectors = sparse.dok_matrix((len(folds[j]), len(word_freqs)), dtype=np.int32)
+        for doc_index in range(len(folds[j])):
+            print("Document number: ", doc_index)
+            for word, freq in folds[j][doc_index].items():
+                word_index = word_indices[word]
+                training_vectors[doc_index, word_index] = freq
+        fold_size_half = len(folds[j]) // 2
+        target_values = [True] * fold_size_half + [False] * fold_size_half
+        classifier.partial_fit(training_vectors, target_values, classes=[True, False])
+    # TODO: predict on folds[i]
+"""
