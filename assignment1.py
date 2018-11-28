@@ -29,7 +29,7 @@ def naive_bayes(folds, smoothed, ngrams, stemming, binary):
 
     accuracies = []
     for i in range(len(folds)):
-        classifier = MultinomialNB(alpha=(1.0 if smoothed else 0))
+        classifier = MultinomialNB(alpha=(1.0 if smoothed else 1.0e-10))
 
         for j in range(len(folds)):
             if i == j:

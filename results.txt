@@ -1,0 +1,26 @@
+Naive Bayes
+***********
+smoothed stemmed presence unigrams accuracy: 82.69976563389737
+smoothed stemmed presence bigrams accuracy: 84.59986933040825
+smoothed stemmed presence uni + bi accuracy: 84.84937032841225
+smoothed stemmed frequency unigrams accuracy: 80.65011118903335
+smoothed stemmed frequency bigrams accuracy: 82.69961578344811
+smoothed stemmed frequency uni + bi accuracy: 82.19956483429537
+smoothed unstemmed presence unigrams accuracy: 82.40006473539408
+smoothed unstemmed presence bigrams accuracy: 83.9002175828523
+smoothed unstemmed presence uni + bi accuracy: 85.0503197808587
+smoothed unstemmed frequency unigrams accuracy: 80.94996193798589
+smoothed unstemmed frequency bigrams accuracy: 82.65031498564433
+smoothed unstemmed frequency uni + bi accuracy: 82.14951478424533
+unsmoothed stemmed presence unigrams accuracy: 73.30099560638483
+unsmoothed stemmed presence bigrams accuracy: 77.40075404746064
+unsmoothed stemmed presence uni + bi accuracy: 79.0507573441705
+unsmoothed stemmed frequency unigrams accuracy: 72.70009530488572
+unsmoothed stemmed frequency bigrams accuracy: 77.60080439721158
+unsmoothed stemmed frequency uni + bi accuracy: 78.55025684367001
+unsmoothed unstemmed presence unigrams accuracy: 71.30079180977384
+unsmoothed unstemmed presence bigrams accuracy: 77.04890519261777
+unsmoothed unstemmed presence uni + bi accuracy: 78.45030659401917
+unsmoothed unstemmed frequency unigrams accuracy: 71.50099200997404
+unsmoothed unstemmed frequency bigrams accuracy: 77.19980459501419
+unsmoothed unstemmed frequency uni + bi accuracy: 78.35020649391907
