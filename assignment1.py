@@ -1,5 +1,6 @@
 import os
 
+from stemmer import PorterStemmer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import CountVectorizer
 
@@ -15,81 +16,74 @@ from sklearn.feature_extraction.text import CountVectorizer
 # Smoothed Naive Bayes
 # SVM
 
-def run_naive_bayes(num_folds, smoothed, ngrams, stemming, binary):
+def naive_bayes(folds, smoothed, ngrams, stemming, binary):
+    p = PorterStemmer()
+
+    vectorizer = CountVectorizer(input="filename", \
+                                 ngram_range=ngrams, \
+                                 tokenizer=(lambda d: [(p.stem(t, 0, len(t)-1) if stemming else t) for t in d.split()]), \
+                                 binary=binary, \
+                                 min_df=4, max_df=1.0)
+
+    X = vectorizer.fit_transform([f for fold in folds for f in fold])
+
+    accuracies = []
+    for i in range(len(folds)):
+        classifier = MultinomialNB(alpha=(1.0 if smoothed else 0))
+
+        for j in range(len(folds)):
+            if i == j:
+                continue
+
+            start_index = 0
+            for k in range(j):
+                start_index += len(folds[k])
+            fold_length = len(folds[j])
+            end_index = start_index + fold_length
+
+            classifier.partial_fit(X[start_index:end_index], [True] * (fold_length // 2) + \
+                                                             [False] * (fold_length // 2), \
+                                                             [True, False])
+
+        start_index = 0
+        for j in range(i):
+            start_index += len(folds[j])
+        end_index = start_index + len(folds[i])
+
+        correct_predictions = 0
+        results = classifier.predict(X[start_index:end_index])
+        for j in range(len(results)):
+            correct_predictions += int(results[j] == (j < len(folds[i]) // 2))
+
+        accuracies.append(100 * correct_predictions/len(results))
+
+    print("smoothed" if smoothed else "unsmoothed", \
+          "stemmed" if stemming else "unstemmed", \
+          "presence" if binary else "frequency", \
+          "unigrams" if ngrams == (1, 1) else \
+          ("bigrams" if ngrams == (2, 2) else \
+          ("uni + bi" if ngrams == (1, 2) else "unknown")), \
+          "accuracy:", sum(accuracies)/len(accuracies))
+
+def perform_tests(num_folds):
     pos_path = "data/POS/"
     neg_path = "data/NEG/"
-    files = [pos_path + p for p in sorted(os.listdir(pos_path))] + \
-            [neg_path + p for p in sorted(os.listdir(neg_path))]
-    print(files)
-
-    def tokenize(document):
-        return document
-    vectorizer = CountVectorizer(input="filename", ngram_range=ngrams)
-
-run_naive_bayes(3, True, (1, 1), False, False)
-
-"""
-# TODO: add support for unigrams/bigrams
-def get_doc_vector(file, word_freqs, stemming):
-    stemmer = PorterStemmer()
-    document = Counter()
-    for token in file.readlines():
-        token = token.strip().lower()
-        if not token:
-            continue
-        if stemming:
-            token = stemmer.stem(token, 0, len(token) - 1)
-        word_freqs[token] += 1
-        document[token] += 1
-    return document
-
-def load_documents(num_folds, stemming):
-    pos_path = "data/POS/"
-    neg_path = "data/NEG/"
-
-    pos_files = os.listdir(pos_path)
-    neg_files = os.listdir(neg_path)
-    pos_files.sort()
-    neg_files.sort()
+    pos_files = [pos_path + p for p in sorted(os.listdir(pos_path))]
+    neg_files = [neg_path + p for p in sorted(os.listdir(neg_path))]
 
     folds = [[] for i in range(num_folds)]
-    word_freqs = Counter()
+    for i in range(len(pos_files)):
+        folds[i % num_folds].append(pos_files[i])
+    for i in range(len(neg_files)):
+        folds[i % num_folds].append(neg_files[i])
 
-    def load_files(files, base_path):
-        for i in range(len(files)):
-            with open(base_path + files[i], encoding="utf8") as f:
-                folds[i % num_folds].append(get_doc_vector(f, word_freqs, stemming))
+    print("\nUsing", num_folds, "fold cross-validation.\n")
 
-    load_files(pos_files, pos_path)
-    load_files(neg_files, neg_path)
+    print("Naive Bayes\n***********")
+    for smoothed in [True, False]:
+        for stemming in [True, False]:
+            for binary in [True, False]:
+                for ngrams in [(1, 1), (2, 2), (1, 2)]:
+                    naive_bayes(folds, smoothed, ngrams, stemming, binary)
 
-    return folds, word_freqs
-
-NUM_FOLDS = 3
-MIN_FREQ_CUTOFF = 4
-STEMMING = False
-
-folds, word_freqs = load_documents(NUM_FOLDS, STEMMING)
-classifier = MultinomialNB()
-
-word_indices = {}
-ctr = 0
-for word in word_freqs:
-    word_indices[word] = ctr
-    ctr += 1
-
-for i in range(len(folds)):
-    for j in range(len(folds)):
-        if i == j:
-            continue
-        training_vectors = sparse.dok_matrix((len(folds[j]), len(word_freqs)), dtype=np.int32)
-        for doc_index in range(len(folds[j])):
-            print("Document number: ", doc_index)
-            for word, freq in folds[j][doc_index].items():
-                word_index = word_indices[word]
-                training_vectors[doc_index, word_index] = freq
-        fold_size_half = len(folds[j]) // 2
-        target_values = [True] * fold_size_half + [False] * fold_size_half
-        classifier.partial_fit(training_vectors, target_values, classes=[True, False])
-    # TODO: predict on folds[i]
-"""
+perform_tests(3)
