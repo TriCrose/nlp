@@ -24,3 +24,18 @@ unsmoothed unstemmed presence uni + bi accuracy: 78.45030659401917
 unsmoothed unstemmed frequency unigrams accuracy: 71.50099200997404
 unsmoothed unstemmed frequency bigrams accuracy: 77.19980459501419
 unsmoothed unstemmed frequency uni + bi accuracy: 78.35020649391907
+
+SVM
+***
+stemmed presence unigrams accuracy: 83.14991638344931
+stemmed presence bigrams accuracy: 81.94901488314662
+stemmed presence uni + bi accuracy: 86.24882367397338
+stemmed frequency unigrams accuracy: 82.60116403828978
+stemmed frequency bigrams accuracy: 80.64981148813484
+stemmed frequency uni + bi accuracy: 83.79996763230297
+unstemmed presence unigrams accuracy: 85.59922197646749
+unstemmed presence bigrams accuracy: 81.89956423489357
+unstemmed presence uni + bi accuracy: 86.99867532202863
+unstemmed frequency unigrams accuracy: 82.94986603369837
+unstemmed frequency bigrams accuracy: 79.79956003908099
+unstemmed frequency uni + bi accuracy: 83.848818878759
