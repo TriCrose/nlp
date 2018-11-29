@@ -39,3 +39,11 @@ unstemmed presence uni + bi accuracy: 86.99867532202863
 unstemmed frequency unigrams accuracy: 82.94986603369837
 unstemmed frequency bigrams accuracy: 79.79956003908099
 unstemmed frequency uni + bi accuracy: 83.848818878759
+
+Doc2Vec
+*******
+Building stemmed doc2vec model... done
+Accuracy: 81.70101238963515
+
+Building unstemmed doc2vec model... done
+Accuracy: 80.05055954157751
